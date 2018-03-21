@@ -12,11 +12,18 @@ def hash_object():
     if "--stdin" in argv:
         content = argv[-1]
     if "--stdin" not in argv:
-        content = argv[-1]
+        try:
+            with open(argv[-1], "r") as file:
+                content = file.read()
+        except FileNotFoundError:
+            print("File {file} does not exist".format(file=argv[-1]))
+            return
 
     hashed_content = hashlib.sha1(content.encode("utf-8")).hexdigest()
     hashed_content_dir_path = paths.objects_dir_path + hashed_content[0:2]
     hashed_content_file_path = hashed_content_dir_path + "/{file}".format(file=hashed_content[2:])
+
+    print(hashed_content)
 
     # if the -w flag is included, the function will write the hashed content
     # to a directory / file pair in the .up/objects directory, otherwise
